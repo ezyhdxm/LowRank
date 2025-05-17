@@ -37,6 +37,30 @@ def top_r_low_rank_symmetric(A, r):
 
     return A_r, eigvecs_r, eigvals_r
 
+def low_rank_entrywise(A, r):
+    assert A.shape[0] == A.shape[1], "Matrix must be square"
+    assert r > 0 and r <= A.shape[0], "Rank r must be between 1 and n"
+
+    # Step 1: Compute eigendecomposition
+    eigvals, eigvecs = np.linalg.eigh(A)  # eigh is optimized for symmetric matrices
+
+    # Step 2: Sort eigenvalues in descending order
+    idx = np.argsort(-np.abs(eigvals))  # Get indices to sort in descending order
+    eigvals = eigvals[idx]
+    eigvecs = eigvecs[:, idx]
+
+    # Step 3: Keep only the top-r components
+    eigvals_r = eigvals[:r]  # Select top-r eigenvalues
+    eigvecs_r = eigvecs[:, :r]  # Select corresponding eigenvectors
+
+    # Step 4: Reconstruct the low-rank matrix
+    A_r = eigvecs_r @ np.diag(eigvals_r) @ eigvecs_r.T
+
+    return A_r
+
+
+    
+
 def top_r_low_rank_asymmetric(A, r):
     """
     Compute the best rank-r approximation of a symmetric matrix A using eigendecomposition.

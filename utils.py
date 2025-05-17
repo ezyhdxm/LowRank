@@ -1,5 +1,10 @@
 import numpy as np
 from math import sqrt, log
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+
 
 def max_row_norm(A):
     """
@@ -29,3 +34,27 @@ def max_abs(A):
 def coh_rate(A):
     n = A.shape[0]  # Number of rows
     return log(n * max_row_norm(A)**2) / log(n)  # Compute coherence
+
+
+
+def tti_approx(Uhat, Ustar):
+    H = Uhat.T @ Ustar
+    R, _, Vt = np.linalg.svd(H, full_matrices=False)
+    P = R @ Vt
+    return max_row_norm(Uhat @ P - Ustar)
+    
+
+############
+# Plotting #
+############
+
+
+def heatmap(A, title="heatmap"):
+    sns.set(font_scale=0.9)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(A, cmap='viridis', annot=False, cbar=True)
+    plt.title(f"{title}", fontsize=16)
+    plt.xlabel("Column index", fontsize=14)
+    plt.ylabel("Row index", fontsize=14)
+    plt.savefig(f"{title}.png", dpi=300)
+    plt.show()
